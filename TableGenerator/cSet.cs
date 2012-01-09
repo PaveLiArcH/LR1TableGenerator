@@ -4,50 +4,32 @@ using System.Text;
 
 namespace TableGenerator
 {
-    public class cSet<T>:Dictionary<T, T>, IEnumerable<T>
+    public class cSet<T>:HashSet<T>, IEnumerable<T>, ICloneable
     {
-        public bool Add(T a_item)
-        {
-            if (!ContainsKey(a_item))
-            {
-                base.Add(a_item, a_item);
-                return true;
-            }
-            else
-                return false;
-        }
-
-        public bool AddRange(IEnumerable<T> a_items)
-        {
-            bool _flag = false;
-            foreach(T _item in a_items)
-                _flag = Add(_item) | _flag;
-            return _flag;
-        }
-
-        public new IEnumerator<T> GetEnumerator()
-        {
-            return Values.GetEnumerator();
-        }
+		public bool AddRange(IEnumerable<T> a_items)
+		{
+			int _countBefore = base.Count;
+			base.UnionWith(a_items);
+			return _countBefore!=base.Count;
+		}
 
         public T[] ToArray()
         {
-            T[] _retArr = new T[Count];
-            int i = 0;
-            foreach (T _item in this)
-                _retArr[i++] = _item;
+            T[] _retArr = new T[base.Count];
+			base.CopyTo(_retArr);
             return _retArr;
         }
 
         public bool ContainsAny(IEnumerable<T> a_items)
         {
-            foreach (T _item in a_items)
-            {
-                if (ContainsKey(_item))
-                    return true;
-            }
-            return false;
+            return base.Overlaps(a_items);
         }
 
-    }
+		public object Clone()
+		{
+			cSet<T> _retSet = new cSet<T>();
+			_retSet.UnionWith(this);
+			return _retSet;
+		}
+	}
 }

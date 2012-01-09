@@ -14,15 +14,17 @@ namespace TableGenerator
         {
             InitializeComponent();
             DataTable _tempDT = a_dataTable.Clone();
-            _tempDT.Columns["terminals"].DataType = typeof(object);
+            //_tempDT.Columns["terminals"].DataType = typeof(object);
 
-            foreach (DataRow _row in a_dataTable.Rows)
-                _tempDT.Rows.Add(_row.ItemArray);
+			foreach (DataRow _row in a_dataTable.Rows)
+			{
+				_tempDT.Rows.Add(_row.ItemArray);
+			}
 
-            foreach (DataRow _row in _tempDT.Rows)
-            {
-                _row["terminals"] = String.Join(", ", _row["terminals"] as string[]);
-            }
+			//foreach (DataRow _row in _tempDT.Rows)
+			//{
+			//    _row["terminals"] = String.Join(", ", _row["terminals"] as string[]);
+			//}
             f_dgvMain.DataSource = _tempDT;
         }
     }

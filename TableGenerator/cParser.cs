@@ -128,33 +128,33 @@ namespace TableGenerator
         {
             cf_leftLex = cf_lisTokens[cf_lisTokens.Count - 3].cf_Value as cLexem;
             cf_leftLex.cp_Type = eLexType.NonTerminal;
-            if (cf_root == null)
-                cf_root = cf_leftLex;
+			if (cf_root == null)
+			{
+				cf_root = cf_leftLex;
+			}
         }
 
         private void cm_doA2()
         {
             cLexem _lexem = cf_lisTokens[cf_lisTokens.Count - 2].cf_Value as cLexem;
-            if (!cf_leftLex.cm_AddChildLexem(null, _lexem as cLexem))
-                throw new cNotLL1Exception(_lexem, cf_leftLex, "Несколько продукций для " + cf_leftLex + " имеют направляющий символ " + _lexem);
+			cf_leftLex.cm_AddChildLexem(_lexem as cLexem, true);
             cf_firstLex = _lexem;
         }
 
         private void cm_doA3()
         {
-            if (!cf_leftLex.cm_AddChildLexem(null, cLexem.cc_EpsilonLexem))
-                throw new cNotLL1Exception(cLexem.cc_EpsilonLexem, cf_leftLex, "Несколько продукций для " + cf_leftLex + " имеют направляющий символ " + cLexem.cc_Epsilon);
+			cf_leftLex.cm_AddChildLexem(cLexem.cc_EpsilonLexem, true);
         }
 
         private void cm_doA4()
         {
             cLexem _lexem = cf_lisTokens[cf_lisTokens.Count - 2].cf_Value as cLexem;
-            cf_leftLex.cm_AddChildLexem(cf_firstLex, _lexem as cLexem);
+            cf_leftLex.cm_AddChildLexem(_lexem as cLexem, false);
         }
         private void cm_doA5()
         {
             cLexem _lexem = cf_lisTokens[cf_lisTokens.Count - 2].cf_Value as cLexem;
-            cf_leftLex.cm_AddChildLexem(cf_firstLex, _lexem as cLexem);
+            cf_leftLex.cm_AddAction(_lexem as cLexem);
         }
     }
 }

@@ -10,13 +10,13 @@ using System.Xml;
 
 namespace TableGenerator
 {
-    public partial class Form1 : Form
+    public partial class fMain : Form
     {
         DataTable cf_tblResult = null;
         cParser cf_parser = null;
-        cLLTableGenerator cf_generator = new cLLTableGenerator();
+		cLRTableGenerator cf_generator = new cLRTableGenerator();
 
-        public Form1()
+        public fMain()
         {
             InitializeComponent();
         }
@@ -34,22 +34,25 @@ namespace TableGenerator
             Color _col = f_rtbGram.SelectionColor;
             foreach (cLexem _lexem in cf_generator.cp_Lexems)
             {
-                foreach (List<cLexem> _lstRightLex in _lexem.cp_ListProducts.Values)
+                foreach (cProduction _production in _lexem.cp_ListProducts)
                 {
                     cm_addLexemToRichText(_lexem, f_rtbGram);
                     f_rtbGram.AppendText("-> ");
                     bool _first = true;
-                    foreach (cLexem _rightLex in _lstRightLex)
+					foreach (cLexem _rightLex in _production.cp_RightPart)
                     {
                         if (_ex != null && _first && _lexem == _ex.cf_LeftLexem)
-                            if (_rightLex.cp_Type == eLexType.NonTerminal && _ex.cf_Lexem.cm_IsLeadingLexem(_rightLex)
-                                || _rightLex == _ex.cf_Lexem)
+                            if (_rightLex.cp_Type == eLexType.NonTerminal || _rightLex == _ex.cf_Lexem)
                                 f_rtbGram.SelectionColor = Color.Red;
-                        if (_first && !_rightLex.cm_HasEpsilonProduct())
+                        if (_first && !_rightLex.cp_HasEpsilonProduct)
                             _first = false;
                         cm_addLexemToRichText(_rightLex, f_rtbGram);
                         f_rtbGram.SelectionColor = _col;
                     }
+					foreach (cLexem _action in _production.cp_ActionList)
+					{
+						cm_addLexemToRichText(_action, f_rtbGram);
+					}
                     f_rtbGram.AppendText("\n");
                 }
             }
@@ -115,7 +118,10 @@ namespace TableGenerator
         {
             if (File.Exists(f_txtFileGram.Text))
             {
-                try
+                #if DEBUG
+				#else
+				try
+				#endif
                 {
                     cScanner _scanner = null;
                     if (f_txtFileGram.Text.EndsWith(".xml"))
@@ -151,7 +157,9 @@ namespace TableGenerator
                         cm_showStatus("Неподдерживаемый формат файла.", true);
                     }
                 }
-                catch (cNotLL1Exception _ex)
+				#if DEBUG
+				#else
+				catch (cNotLL1Exception _ex)
                 {
                     cm_showGram(_ex);
                     cm_showStatus(_ex.Message, true);
@@ -165,6 +173,7 @@ namespace TableGenerator
                 {
                     cm_showStatus(_ex.Message, true);
                 }
+				#endif
             }
             else
             {
@@ -174,23 +183,24 @@ namespace TableGenerator
 
         private void f_btnGenerateTable_Click(object sender, EventArgs e)
         {
-            try
-            {
-                cf_tblResult = cf_generator.cm_GenerateTable();
-                f_btnViewTable.Enabled = true;
-                f_gbStep4.Enabled = true;
-                cm_showStatus("Генерация таблицы разбора завершена.", false);
-            }
-            catch (cNotLL1Exception _ex)
-            {
-                // Вывод текста грамматики, который загружен целиком к данному моменту
-                cm_showGram(_ex);
-                cm_showStatus(_ex.Message, true);
-            }
-            catch (Exception _ex)
-            {
-                cm_showStatus(_ex.Message, true);
-            }
+			//try
+			//{
+			//    cf_tblResult = cf_generator.cm_GenerateTable();
+			//    f_btnViewTable.Enabled = true;
+			//    f_gbStep4.Enabled = true;
+			//    cm_showStatus("Генерация таблицы разбора завершена.", false);
+			//}
+			//catch (cNotLL1Exception _ex)
+			//{
+			//    // Вывод текста грамматики, который загружен целиком к данному моменту
+			//    cm_showGram(_ex);
+			//    cm_showStatus(_ex.Message, true);
+			//}
+			//catch (Exception _ex)
+			//{
+			//    cm_showStatus(_ex.Message, true);
+			//}
+			MessageBox.Show("Not implemented");
         }
 
         private void f_btnViewTable_Click(object sender, EventArgs e)

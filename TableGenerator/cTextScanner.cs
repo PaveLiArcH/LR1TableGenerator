@@ -165,9 +165,10 @@ namespace TableGenerator
 
         private bool cm_isLetter(int _ch)
         {
-            return char.IsLetterOrDigit((char)_ch) || char.IsPunctuation((char)_ch) && _ch != '{' && _ch != '}'
-                 || _ch.Equals('*') || _ch.Equals('/') || _ch.Equals('+') || _ch.Equals('-')
-                 || _ch.Equals('=') || _ch.Equals('<') || _ch.Equals('>');
+			//return char.IsLetterOrDigit((char)_ch) || char.IsPunctuation((char)_ch) && _ch != '{' && _ch != '}'
+			//     || _ch.Equals('*') || _ch.Equals('/') || _ch.Equals('+') || _ch.Equals('-')
+			//     || _ch.Equals('=') || _ch.Equals('<') || _ch.Equals('>');
+			return (_ch > 0) && (_ch != '{') && (_ch != '}') && !(Char.IsWhiteSpace((char)_ch) || Char.IsControl((char)_ch));
         }
 
         private object cm_getAction()

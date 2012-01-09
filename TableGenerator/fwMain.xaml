@@ -1,0 +1,73 @@
+﻿<Window x:Class="TableGenerator.fwMain"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="340" d:DesignWidth="423" Loaded="Window_Loaded" SizeToContent="Manual" WindowStartupLocation="CenterOwner" Background="#FFF0F0F0">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Header="1. Загрузка файла грамматики" HorizontalAlignment="Stretch" Name="f_gbStep1" VerticalAlignment="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox Name="f_txtFileGram" Margin="2" />
+                <Button Content="Обзор…" HorizontalAlignment="Right" Name="f_btnBrowseFileGram" VerticalAlignment="Top" Grid.Column="1" Margin="2" Click="f_btnBrowseFileGram_Click" />
+                <Button Content="Загрузка" Grid.Column="2" Name="f_btnLoadGram" Margin="2" HorizontalAlignment="Right" Click="f_btnLoadGram_Click" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="2. Просмотр грамматики" Name="f_gbStep2" Grid.Row="1">
+            <Grid>
+                <Slider Name="f_rtbScale" Minimum="0.5" Maximum="5" Visibility="Hidden" Value="1"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <RichTextBox Name="f_rtbGram" FontFamily="Lucida Sans Unicode" FontSize="12" BorderThickness="0" PreviewMouseWheel="f_rtbGram_PreviewMouseWheel" IsReadOnly="True">
+                        <RichTextBox.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding ElementName=f_rtbScale, Path=Value}" ScaleY="{Binding ElementName=f_rtbScale, Path=Value}"/>
+                        </RichTextBox.LayoutTransform>
+                        <RichTextBox.Resources>
+                            <Style TargetType="{x:Type Paragraph}">
+                                <Setter Property="Margin" Value="0.5"/>
+                            </Style>
+                        </RichTextBox.Resources>
+                        <FlowDocument PageWidth="{Binding ElementName=f_rtbGram, Path=ActualWidth}"/>
+                    </RichTextBox>
+                </ScrollViewer>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="2" Header="3. Генерация и просмотр таблицы разбора" Name="f_gbStep3" VerticalAlignment="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Button Content="Генерация" Name="f_btnGenerateTable" Click="f_btnGenerateTable_Click" />
+                <Button Content="Просмотр" Name="f_btnViewTable" Grid.Column="2" Click="f_btnViewTable_Click" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="3" Header="4. Сохранение таблицы разбора" Name="f_gbStep4" VerticalAlignment="Top">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox Margin="2" Name="f_txtFileTable" />
+                <Button Content="Сохранение" Grid.Column="2" Name="button1" Margin="2" Click="button1_Click" />
+                <Button Content="Обзор…" Grid.Column="1" Name="button2" Margin="2" Click="button2_Click" />
+            </Grid>
+        </GroupBox>
+        <StatusBar Grid.Row="4" Name="statusStrip1">
+            <StatusBarItem Name="f_tsslStatus" />
+        </StatusBar>
+    </Grid>
+</Window>

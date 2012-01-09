@@ -7,178 +7,194 @@ namespace TableGenerator
     public class cLexem
     {
         public static readonly string cc_Epsilon = "ε";
+		public static readonly string cc_Stop = "$";
         public static readonly cLexem cc_EpsilonLexem = new cLexem(cc_Epsilon, eLexType.Epsilon);
+		public static readonly cLexem cc_StopLexem = new cLexem(cc_Stop, eLexType.Stop);
 
         public static readonly Dictionary<string, cLexem> cf_LexemDic = new Dictionary<string, cLexem>();
 
         public readonly string cf_Name;
         eLexType cf_type;
 
-        Dictionary<cLexem, List<cLexem>> cf_listProducts = new Dictionary<cLexem, List<cLexem>>();
-        cSet<cLexem> cf_leadLexems = null;
+		public int cf_EpsilonCount;
+
+		List<cProduction> cf_listProducts = new List<cProduction>();
+
+		cSet<cLexem> cf_firstCache;
+
+		public cSet<cLexem> cp_FirstCache
+		{
+			get
+			{
+				if (cf_firstCache == null)
+				{
+					cm_First(null);
+				}
+				return cf_firstCache;
+			}
+		}
 
         public cLexem(string a_name, eLexType a_type)
         {
+			cf_firstCache = null;
+			cf_EpsilonCount = 0;
             cf_Name = a_name;
             cf_type = a_type;
             if (a_name == cc_Epsilon)
                 cf_type = eLexType.Epsilon;
         }
 
+		public static cLexem cm_ExtendGrammatic(cLexem a_root)
+		{
+			cLexem _newRoot = cLexem.cm_GetLexem(" E'");
+			_newRoot.cf_type = eLexType.NonTerminal;
+			_newRoot.cm_AddChildLexem(a_root, true);
+			//_newRoot.cm_AddChildLexem(cLexem.cc_StopLexem, false);
+			return _newRoot;
+		}
+
         public eLexType cp_Type
         {
-            get { return cf_type; }
+			get
+			{
+				return cf_type;
+			}
             set 
             {
-                if (cf_type == eLexType.Terminal)
-                    cf_type = value;
+				if (cf_type == eLexType.Terminal)
+				{
+					cf_type = value;
+				}
             }
         }
 
-        public Dictionary<cLexem, List<cLexem>> cp_ListProducts
-        { 
-            get { return cf_listProducts; } 
-        }
-
-        public cSet<cLexem> cp_LeadLexems
+		public List<cProduction> cp_ListProducts
         {
-            get
-            {
-                if (cf_leadLexems == null)
-                {
-                    cf_leadLexems = new cSet<cLexem>();
-                    try
-                    {
-                        cf_leadLexems.AddRange(this.cm_getLeadLexemsInternal(new List < cLexem >()));
-                    }
-                    catch (cNotLL1Exception _ex)
-                    {
-                        throw new cNotLL1Exception(_ex.cf_Lexem, this, "Несколько продукций для " + this + " имеют направляющий символ " + _ex.cf_Lexem);
-                    }
-                }
-                return cf_leadLexems;
-            }
-        }
-
-        public bool cm_IsLeadingLexem(cLexem a_lexem)
-        {
-            if (this.cp_LeadLexems != null)
-            {
-                foreach (cLexem _lex in this.cp_LeadLexems)
-                    if (_lex == a_lexem)
-                        return true;
-            }
-            return false;
+			get
+			{
+				return cf_listProducts;
+			}
         }
 
         public static cLexem cm_GetLexem(string a_name)
         {
-            if (a_name == cc_Epsilon)
-                return cc_EpsilonLexem;
+			if (a_name == cc_Epsilon)
+			{
+				return cc_EpsilonLexem;
+			}
+			if (a_name == cc_Stop)
+			{
+				return cc_StopLexem;
+			}
             cLexem _retLex = null;
-            if (cf_LexemDic.ContainsKey(a_name))
-                _retLex = cf_LexemDic[a_name];
-            else
-            {
-                _retLex = new cLexem(a_name, eLexType.Terminal);
-                cf_LexemDic.Add(a_name, _retLex);
-            }
+			if (cf_LexemDic.ContainsKey(a_name))
+			{
+				_retLex = cf_LexemDic[a_name];
+			}
+			else
+			{
+				_retLex = new cLexem(a_name, eLexType.Terminal);
+				cf_LexemDic.Add(a_name, _retLex);
+			}
             return _retLex;
         }
 
-        public bool cm_AddChildLexem(cLexem a_key, cLexem a_nextLex)
+        public void cm_AddChildLexem(cLexem a_lexem, bool a_newProduct)
         {
-            if (a_key == null)
-            {
-                if (cf_listProducts.ContainsKey(a_nextLex))
-                    return false;
-                else
-                    cf_listProducts.Add(a_nextLex, new List<cLexem>(new cLexem[] { a_nextLex }));
-            }
-            else
-            {
-                cf_listProducts[a_key].Add(a_nextLex);
-            }
-            return true;
+			if (a_lexem.cp_Type == eLexType.Action)
+			{
+				throw new Exception("Попытка добавить к продукции лексемы " + cf_Name + " лексему типа " + a_lexem.cp_Type.ToString());
+			}
+			if (a_newProduct)
+			{
+				cProduction _production = new cProduction(this);
+				_production.cm_Add(a_lexem);
+				cf_listProducts.Add(_production);
+			}
+			else
+			{
+				cProduction _production = cf_listProducts[cf_listProducts.Count - 1];
+				_production.cm_Add(a_lexem);
+			}
         }
 
-        public bool cm_HasEpsilonProduct()
-        {
-            return cf_listProducts.ContainsKey(cc_EpsilonLexem);
-        }
+		public void cm_AddAction(cLexem a_action)
+		{
+			if (a_action.cp_Type != eLexType.Action)
+			{
+				throw new Exception("Попытка добавить к лексеме " + cf_Name + " в качестве действия лексему типа " + cp_Type.ToString());
+			}
+			cProduction _production = cf_listProducts[cf_listProducts.Count - 1];
+			_production.cm_AddAction(a_action);
+		}
 
-        public cLexem[] cm_GetLeadLexems(cLexem a_productFirstLex)
+        public bool cp_HasEpsilonProduct
         {
-            List<cLexem> _watchedLexems = new List<cLexem>();
-            _watchedLexems.Add(this);
-            List<cLexem> _tempLst = new List<cLexem>();
-            cm_fillNonTerminalLeadingLexList(_watchedLexems, cf_listProducts[a_productFirstLex], 0, _tempLst);
-            List<cLexem> _retLst = new List<cLexem>();
-            foreach (cLexem _lex in _tempLst)
-                if (_lex.cp_Type == eLexType.Terminal || _lex.cp_Type == eLexType.Epsilon)
-                    _retLst.Add(_lex);
-            return _retLst.ToArray();
-        }
-
-        List<cLexem> cm_getLeadLexemsInternal(List<cLexem> a_watchedLexems)
-        {
-            List<cLexem> _retLst = new List<cLexem>();
-            if (a_watchedLexems.Contains(this))
-            {
-                //if (cf_type == eLexType.Terminal || cf_type == eLexType.NonTerminal)
-                    throw new cNotLL1Exception(this, null, String.Empty);
-            }
-            else
-            {
-                a_watchedLexems.Add(this);
-                switch (cf_type)
-                {
-                    case eLexType.NonTerminal:
-                        foreach (KeyValuePair<cLexem, List<cLexem>> _kvp in cf_listProducts)
-                        {
-                            if (_kvp.Key.cp_Type != eLexType.Epsilon)
-                            {
-                                cm_fillNonTerminalLeadingLexList(a_watchedLexems, _kvp.Value, 0, _retLst);
-                            }
-                            else
-                                _retLst.Add(_kvp.Key);
-                        }
-                        if (cf_leadLexems == null)
-                        {
-                            cf_leadLexems = new cSet<cLexem>();
-                            cf_leadLexems.AddRange(_retLst);
-                        }
-                        break;
-                    case eLexType.Terminal:
-                    case eLexType.Epsilon:
-                        _retLst.Add(this);
-                        break;
-                }
-            }
-            return _retLst;
-        }
-
-        private void cm_fillNonTerminalLeadingLexList(List<cLexem> a_watchedLexems, List<cLexem> a_prodLst, int a_index, List<cLexem> a_retLst)
-        {
-            List<cLexem> _lstLex = a_prodLst[a_index].cm_getLeadLexemsInternal(a_watchedLexems);
-            foreach (cLexem _arrLexItem in _lstLex)
-            {
-                if (_arrLexItem.cp_Type == eLexType.Epsilon)
-                {
-                    if (a_prodLst.Count > a_index + 1)
-                        cm_fillNonTerminalLeadingLexList(a_watchedLexems, a_prodLst, a_index + 1, a_retLst);
-                }
-                //else
-                //{
-                    a_retLst.Add(_arrLexItem);
-                //}
-            }
+			get
+			{
+				return cf_EpsilonCount > 0;
+			}
         }
 
         public override string ToString()
         {
             return cf_Name;
         }
+
+		public cSet<cLexem> cm_First(cSet<cLexem> a_set)
+		{
+			if (cf_firstCache == null)
+			{
+				cSet<cLexem> _retSet = a_set ?? new cSet<cLexem>();
+				switch (cf_type)
+				{
+					case (eLexType.Epsilon):
+					case (eLexType.Stop):
+					case (eLexType.Terminal):
+						_retSet.Add(this);
+						break;
+					case (eLexType.NonTerminal):
+						if (cf_EpsilonCount > 0)
+						{
+							_retSet.Add(cc_EpsilonLexem);
+						}
+						foreach (cProduction _production in cf_listProducts)
+						{
+							if (_production.cp_RightPart.Count > 0)
+							{
+								int _pos = 0;
+								cLexem _currLexem = _production.cp_RightPart[_pos];
+								do
+								{
+									_retSet.Remove(cLexem.cc_EpsilonLexem);
+									_currLexem = _production.cp_RightPart[_pos++];
+									if (_currLexem != this)
+									{
+										_currLexem.cm_First(_retSet);
+									}
+								} while (_retSet.Contains(cLexem.cc_EpsilonLexem) && (_pos < _production.cp_RightPart.Count));
+							}
+						}
+						break;
+					default:
+						throw new Exception("Передан некорректный тип в cm_First: " + cf_type.ToString());
+				}
+				cf_firstCache = _retSet.Clone() as cSet<cLexem>;
+				return _retSet;
+			}
+			else
+			{
+				if (a_set == null)
+				{
+					return cf_firstCache.Clone() as cSet<cLexem>;
+				}
+				else
+				{
+					a_set.AddRange(cf_firstCache);
+					return a_set;
+				}
+			}
+		}
     }
 
     public enum eLexType
@@ -186,6 +202,7 @@ namespace TableGenerator
         Terminal,
         NonTerminal,
         Epsilon,
-        Action
+        Action,
+		Stop
     }
 }
