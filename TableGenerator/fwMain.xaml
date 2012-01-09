@@ -19,10 +19,12 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
                 <TextBox Name="f_txtFileGram" Margin="2" />
                 <Button Content="Обзор…" HorizontalAlignment="Right" Name="f_btnBrowseFileGram" VerticalAlignment="Top" Grid.Column="1" Margin="2" Click="f_btnBrowseFileGram_Click" />
-                <Button Content="Загрузка" Grid.Column="2" Name="f_btnLoadGram" Margin="2" HorizontalAlignment="Right" Click="f_btnLoadGram_Click" />
+                <Button Content="Загрузка LL" Grid.Column="2" Name="f_btnLoadGramLL" Margin="2" HorizontalAlignment="Right" Click="f_btnLoadGramLL_Click" />
+                <Button Content="Загрузка LR" Grid.Column="3" Name="f_btnLoadGramLR" Margin="2" HorizontalAlignment="Right" Click="f_btnLoadGramLR_Click" />
             </Grid>
         </GroupBox>
         <GroupBox Header="2. Просмотр грамматики" Name="f_gbStep2" Grid.Row="1">

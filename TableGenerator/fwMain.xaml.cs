@@ -141,7 +141,7 @@ namespace TableGenerator
 			}
 		}
 
-		private void f_btnLoadGram_Click(object sender, RoutedEventArgs e)
+		private void f_btnLoadGramLR_Click(object sender, RoutedEventArgs e)
 		{
 			if (File.Exists(f_txtFileGram.Text))
 			{
@@ -167,7 +167,74 @@ namespace TableGenerator
 						f_gbStep4.IsEnabled = false;
 						f_rtbGram.Document.Blocks.Clear();
 
-						cf_parser = new cParser(_scanner, System.IO.Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + @"\metagram.xml");
+						cf_parser = new cLRParser(_scanner, System.IO.Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + @"\metagram.LR.xml");
+						cf_parser.cm_Parse();
+						cf_generator.cm_Init(cf_parser);
+						_scanner.Dispose();
+
+						// Вывод текста грамматики
+						cm_showGram(null as cNotLL1Exception);
+						f_gbStep3.IsEnabled = true;
+						f_btnViewTable.IsEnabled = false;
+						f_gbStep4.IsEnabled = false;
+						cm_showStatus("Загрузка грамматики завершена.", false);
+					}
+					else
+					{
+						cm_showStatus("Неподдерживаемый формат файла.", true);
+					}
+				}
+#if DEBUG
+#else
+				catch (cNotLL1Exception _ex)
+                {
+                    cm_showGram(_ex);
+                    cm_showStatus(_ex.Message, true);
+                }
+                catch (cParserException _ex)
+                {
+                    cm_showGram(_ex);
+                    cm_showStatus(_ex.Message, true);
+                }
+                catch (Exception _ex)
+                {
+                    cm_showStatus(_ex.Message, true);
+                }
+#endif
+			}
+			else
+			{
+				cm_showStatus("Выбранного файла не существует.", true);
+			}
+		}
+
+		private void f_btnLoadGramLL_Click(object sender, RoutedEventArgs e)
+		{
+			if (File.Exists(f_txtFileGram.Text))
+			{
+#if DEBUG
+#else
+				try
+#endif
+				{
+					cScanner _scanner = null;
+					if (f_txtFileGram.Text.EndsWith(".xml"))
+					{
+						_scanner = new cXMLScanner(f_txtFileGram.Text);
+					}
+					else if (f_txtFileGram.Text.EndsWith(".txt"))
+					{
+						_scanner = new cTextScanner(f_txtFileGram.Text);
+					}
+
+					if (_scanner != null)
+					{
+						f_gbStep3.IsEnabled = false;
+						f_btnViewTable.IsEnabled = false;
+						f_gbStep4.IsEnabled = false;
+						f_rtbGram.Document.Blocks.Clear();
+
+						cf_parser = new cLLParser(_scanner, System.IO.Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + @"\metagram.LL.xml");
 						cf_parser.cm_Parse();
 						cf_generator.cm_Init(cf_parser);
 						_scanner.Dispose();

@@ -10,7 +10,7 @@ namespace TableGenerator
     {
         public static void cm_SaveXML(string a_filename, DataTable a_dataTable)
         {
-            a_dataTable.WriteXml(a_filename);
+            a_dataTable.WriteXml(a_filename, XmlWriteMode.WriteSchema);
         }
     }
 }

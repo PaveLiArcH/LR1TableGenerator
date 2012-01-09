@@ -62,9 +62,10 @@ namespace TableGenerator
 				do
 				{
 					_retSet.Remove(cLexem.cc_EpsilonLexem);
-					_currLexem = a_listLexem[_pos--];
-					_currLexem.cm_First(_retSet);
-				} while (_retSet.Contains(cLexem.cc_EpsilonLexem) && (_pos > 0));
+					_currLexem = a_listLexem[_pos];
+					_retSet.UnionWith(_currLexem.cp_FirstCache);
+					_pos--;
+				} while (_retSet.Contains(cLexem.cc_EpsilonLexem) && (_pos >= 0));
 			}
 			return _retSet;
 		}
@@ -76,7 +77,8 @@ namespace TableGenerator
 			{
 				DataColumn _column = a_dataTable.Columns.Add(a_column);
 			}
-			if (a_dataTable.Rows[a_rowNum][a_column] is System.DBNull)
+			object _obj=a_dataTable.Rows[a_rowNum][a_column];
+			if ((_obj is System.DBNull) || ((_obj as String)==a_value))
 			{
 				a_dataTable.Rows[a_rowNum][a_column] = a_value;
 			}
@@ -90,7 +92,12 @@ namespace TableGenerator
 
 		public DataTable cm_GenerateTable()
 		{
-			DataTable _retDataTable = new DataTable();
+			if (!cf_valid)
+			{
+				throw new Exception("Необходимо загрузить грамматики");
+			}
+
+			DataTable _retDataTable = new DataTable("table");
 
 			Dictionary<cSet<cConfiguration>, int> _jumpDictionary = new Dictionary<cSet<cConfiguration>, int>();
 			int _i=0;
@@ -103,22 +110,22 @@ namespace TableGenerator
 				_i++;
 			}
 
-			Dictionary<cProduction, int> _productsDictionary = new Dictionary<cProduction, int>();
-			_i = 0;
-			foreach (cLexem _lexem in cp_Lexems)
-			{
-				foreach (cProduction _production in _lexem.cp_ListProducts)
-				{
-					_productsDictionary.Add(_production, _i++);
-				}
-			}
+			//Dictionary<cProduction, int> _productsDictionary = new Dictionary<cProduction, int>();
+			//_i = 0;
+			//foreach (cLexem _lexem in cp_Lexems)
+			//{
+			//    foreach (cProduction _production in _lexem.cp_ListProducts)
+			//    {
+			//        _productsDictionary.Add(_production, _i++);
+			//    }
+			//}
 
 			foreach (cSet<cConfiguration> _item in cf_listItems)
 			{
 				int _itemIndex=_jumpDictionary[_item];
 				foreach (cConfiguration _configuration in _item)
 				{
-					if (_configuration.cf_Production.cp_RightPart.Count > _configuration.cf_Position)
+					if ((_configuration.cf_Production.cp_RightPart.Count > _configuration.cf_Position) && !_configuration.cf_Production.cp_EpsilonProduct)
 					{
 						cLexem _lexem = _configuration.cf_Production.cp_RightPart[_configuration.cf_Position];
 						if (_lexem.cp_Type == eLexType.Terminal)
@@ -133,10 +140,24 @@ namespace TableGenerator
 							cSet<cLexem> _follow = cf_follow[_configuration.cf_Production.cp_Root];
 							foreach (cLexem _lexem in _follow)
 							{
-								string _str = "R" + _productsDictionary[_configuration.cf_Production].ToString();
+								//string _str = "R" + _productsDictionary[_configuration.cf_Production].ToString();
+								//foreach (cLexem _action in _configuration.cf_Production.cp_ActionList)
+								//{
+								//    _str += " {" + _action.ToString() +"}";
+								//}
+								//cm_dataTableAdd(_retDataTable, _itemIndex, _lexem.cf_Name, _str);
+								string _str;
+								if (_configuration.cf_Production.cp_EpsilonProduct)
+								{
+									_str = "R0 " + _configuration.cf_Production.cp_Root.ToString();
+								}
+								else
+								{
+									_str = "R" + _configuration.cf_Production.cp_RightPart.Count.ToString() + " " + _configuration.cf_Production.cp_Root.ToString();
+								}
 								foreach (cLexem _action in _configuration.cf_Production.cp_ActionList)
 								{
-									_str += " {" + _action.ToString() +"}";
+									_str += " {" + _action.ToString() + "}";
 								}
 								cm_dataTableAdd(_retDataTable, _itemIndex, _lexem.cf_Name, _str);
 							}
@@ -176,29 +197,26 @@ namespace TableGenerator
 			_retDic[cf_root].Add(cLexem.cc_StopLexem);
 
 			// 2
-			foreach (cLexem _nonTerminal in cp_Lexems)
+			foreach (cLexem _nonTerminal in _retDic.Keys)
 			{
-				if (_nonTerminal.cp_Type == eLexType.NonTerminal)
+				foreach (cProduction _production in _nonTerminal.cp_ListProducts)
 				{
-					foreach (cProduction _production in _nonTerminal.cp_ListProducts)
+					int _count = _production.cp_RightPart.Count-1;
+					List<cLexem> _revListProduct = new List<cLexem>();
+					for (int i = _count; i >= 0; i--)
 					{
-						int _count = _production.cp_RightPart.Count;
-						List<cLexem> _revListProduct = new List<cLexem>();
-						for (int i = _count - 1; i >= 0; i--)
+						cLexem _lex = _production.cp_RightPart[i];
+						switch (_lex.cp_Type)
 						{
-							cLexem _lex = _production.cp_RightPart[i];
-							switch (_lex.cp_Type)
-							{
-								case eLexType.NonTerminal:
-									cSet<cLexem> _first = cm_First(_revListProduct);
-									_first.Remove(cLexem.cc_EpsilonLexem);
-									_retDic[_lex].AddRange(_first);
-									break;
-								default:
-									break;
-							}
-							_revListProduct.Add(_lex);
+							case eLexType.NonTerminal:
+								cSet<cLexem> _first = cm_First(_revListProduct);
+								_first.Remove(cLexem.cc_EpsilonLexem);
+								_retDic[_lex].AddRange(_first);
+								break;
+							default:
+								break;
 						}
+						_revListProduct.Add(_lex);
 					}
 				}
 			}
@@ -208,37 +226,37 @@ namespace TableGenerator
 			while (_added)
 			{
 				_added = false;
-				foreach (cLexem _nonTerminal in cp_Lexems)
+				foreach (cLexem _nonTerminal in _retDic.Keys)
 				{
-					if (_nonTerminal.cp_Type == eLexType.NonTerminal)
+					foreach (cProduction _production in _nonTerminal.cp_ListProducts)
 					{
-						foreach (cProduction _production in _nonTerminal.cp_ListProducts)
+						int _count = _production.cp_RightPart.Count-1;
+						List<cLexem> _revListProduct = new List<cLexem>();
+						bool _break = false;//?
+						for (int i = _count; i >= 0; i--)
 						{
-							int _count = _production.cp_RightPart.Count;
-							List<cLexem> _revListProduct = new List<cLexem>();
-							bool _break = false;
-							for (int i = _count - 1; i >= 0; i--)
+							cLexem _lex = _production.cp_RightPart[i];
+							switch (_lex.cp_Type)
 							{
-								cLexem _lex = _production.cp_RightPart[i];
-								switch (_lex.cp_Type)
-								{
-									case eLexType.NonTerminal:
-										cSet<cLexem> _first = cm_First(_revListProduct);
-										if (_first.Contains(cLexem.cc_EpsilonLexem))
-										{
-											_production.cp_Root.cm_First(_first);
-										}
-										_added = _retDic[_lex].AddRange(_retDic[_nonTerminal]) | _added;
-										break;
-									case eLexType.Action:
-										break;
-									default:
-										_break = true;
-										break;
-								}
-								_revListProduct.Add(_lex);
-								if (_break) break;
+								case eLexType.NonTerminal:
+									cSet<cLexem> _first = cm_First(_revListProduct);
+									if (_first.Contains(cLexem.cc_EpsilonLexem) | (i == _count))
+									{
+										//_production.cp_Root.cm_First(_first);
+										//_first.UnionWith(_production.cp_Root.cp_FirstCache);
+										_first.Remove(cLexem.cc_EpsilonLexem);
+										_first.UnionWith(_retDic[_nonTerminal]);
+									}
+									_added |= _retDic[_lex].AddRange(_first);
+									break;
+								case eLexType.Action:
+									break;
+								default:
+									_break = true;
+									break;
 							}
+							_revListProduct.Add(_lex);
+							if (_break) break;
 						}
 					}
 				}
@@ -297,6 +315,7 @@ namespace TableGenerator
 					_retSet.Add(_configuration.cf_Production.cp_RightPart[_configuration.cf_Position]);
 				}
 			}
+			_retSet.Remove(cLexem.cc_EpsilonLexem);
 			return _retSet;
 		}
 

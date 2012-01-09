@@ -22,6 +22,10 @@ namespace TableGenerator
 		{
 			if (!cf_configurationsCache.ContainsKey(a_production))
 			{
+				if (a_production.cp_EpsilonProduct & (a_position != 0))
+				{
+					throw new Exception("Попытка создать некорректную конфигурацию из эпсилон-продукции");
+				}
 				cf_configurationsCache.Add(a_production, new Dictionary<int, cConfiguration>());
 			}
 			if (!cf_configurationsCache[a_production].ContainsKey(a_position))

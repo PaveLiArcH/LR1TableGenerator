@@ -140,7 +140,7 @@ namespace TableGenerator
                         f_gbStep4.Enabled = false;
                         f_rtbGram.Clear(); 
                         
-                        cf_parser = new cParser(_scanner, Application.StartupPath + @"\metagram.xml");
+                        cf_parser = new cLLParser(_scanner, Application.StartupPath + @"\metagram.xml");
                         cf_parser.cm_Parse();
                         cf_generator.cm_Init(cf_parser);
                         _scanner.Dispose();

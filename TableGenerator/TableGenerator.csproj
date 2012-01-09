@@ -69,8 +69,10 @@
   <ItemGroup>
     <Compile Include="cConfiguration.cs" />
     <Compile Include="cLexem.cs" />
+    <Compile Include="cLRParser.cs" />
     <Compile Include="cLRTableGenerator.cs" />
     <Compile Include="cNotLL1Exception.cs" />
+    <Compile Include="cLLParser.cs" />
     <Compile Include="cParser.cs" />
     <Compile Include="cProduction.cs" />
     <Compile Include="cScanner.cs" />

@@ -9,6 +9,8 @@ namespace TableGenerator
         public readonly eTokenType cf_Type;
         public readonly object cf_Value;
 
+		public static cToken cc_NullToken = new cToken(eTokenType.Null, null);
+
         public cToken(eTokenType a_type, object a_value)
         {
             cf_Type = a_type;
@@ -43,6 +45,15 @@ namespace TableGenerator
         {
             return base.GetHashCode();
         }
+
+		public string cm_TypeToStr()
+		{
+			if (cf_Type == eTokenType.Null)
+			{
+				return "$";
+			}
+			return cf_Type.ToString();
+		}
     }
 
     public enum eTokenType

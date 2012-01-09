@@ -1,0 +1,158 @@
+<?xml version="1.0" standalone="yes"?>
+<NewDataSet>
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:MainDataTable="table" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="table">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="_x0020_States" type="xs:string" minOccurs="0" />
+                <xs:element name="лексема" type="xs:string" minOccurs="0" />
+                <xs:element name="грамматика" type="xs:string" minOccurs="0" />
+                <xs:element name="продукция" type="xs:string" minOccurs="0" />
+                <xs:element name="левая_часть" type="xs:string" minOccurs="0" />
+                <xs:element name="_x0024_" type="xs:string" minOccurs="0" />
+                <xs:element name="список_продукций" type="xs:string" minOccurs="0" />
+                <xs:element name="пустая_лексема" type="xs:string" minOccurs="0" />
+                <xs:element name="правая_часть" type="xs:string" minOccurs="0" />
+                <xs:element name="первая_лексема" type="xs:string" minOccurs="0" />
+                <xs:element name="стрелка" type="xs:string" minOccurs="0" />
+                <xs:element name="перевод_строки" type="xs:string" minOccurs="0" />
+                <xs:element name="действие" type="xs:string" minOccurs="0" />
+                <xs:element name="список_лексем" type="xs:string" minOccurs="0" />
+                <xs:element name="последующая_лексема" type="xs:string" minOccurs="0" />
+                <xs:element name="список_действий" type="xs:string" minOccurs="0" />
+                <xs:element name="очередное_действие" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <table>
+    <_x0020_States>0</_x0020_States>
+    <лексема>S4</лексема>
+    <грамматика>1</грамматика>
+    <продукция>2</продукция>
+    <левая_часть>3</левая_часть>
+  </table>
+  <table>
+    <_x0020_States>1</_x0020_States>
+    <_x0024_>A</_x0024_>
+  </table>
+  <table>
+    <_x0020_States>2</_x0020_States>
+    <лексема>S4</лексема>
+    <продукция>6</продукция>
+    <левая_часть>3</левая_часть>
+    <_x0024_>R0 список_продукций</_x0024_>
+    <список_продукций>5</список_продукций>
+  </table>
+  <table>
+    <_x0020_States>3</_x0020_States>
+    <лексема>S10</лексема>
+    <пустая_лексема>S9</пустая_лексема>
+    <правая_часть>7</правая_часть>
+    <первая_лексема>8</первая_лексема>
+  </table>
+  <table>
+    <_x0020_States>4</_x0020_States>
+    <стрелка>S11</стрелка>
+  </table>
+  <table>
+    <_x0020_States>5</_x0020_States>
+    <_x0024_>R2 грамматика</_x0024_>
+  </table>
+  <table>
+    <_x0020_States>6</_x0020_States>
+    <лексема>S4</лексема>
+    <продукция>6</продукция>
+    <левая_часть>3</левая_часть>
+    <_x0024_>R0 список_продукций</_x0024_>
+    <список_продукций>12</список_продукций>
+  </table>
+  <table>
+    <_x0020_States>7</_x0020_States>
+    <перевод_строки>S13</перевод_строки>
+  </table>
+  <table>
+    <_x0020_States>8</_x0020_States>
+    <лексема>S16</лексема>
+    <перевод_строки>R0 список_лексем</перевод_строки>
+    <действие>R0 список_лексем</действие>
+    <список_лексем>14</список_лексем>
+    <последующая_лексема>15</последующая_лексема>
+  </table>
+  <table>
+    <_x0020_States>9</_x0020_States>
+    <перевод_строки>R1 правая_часть {A3}</перевод_строки>
+  </table>
+  <table>
+    <_x0020_States>10</_x0020_States>
+    <лексема>R1 первая_лексема {A2}</лексема>
+    <перевод_строки>R1 первая_лексема {A2}</перевод_строки>
+    <действие>R1 первая_лексема {A2}</действие>
+  </table>
+  <table>
+    <_x0020_States>11</_x0020_States>
+    <лексема>R2 левая_часть {A1}</лексема>
+    <пустая_лексема>R2 левая_часть {A1}</пустая_лексема>
+  </table>
+  <table>
+    <_x0020_States>12</_x0020_States>
+    <_x0024_>R2 список_продукций</_x0024_>
+  </table>
+  <table>
+    <_x0020_States>13</_x0020_States>
+    <лексема>R3 продукция</лексема>
+    <_x0024_>R3 продукция</_x0024_>
+  </table>
+  <table>
+    <_x0020_States>14</_x0020_States>
+    <перевод_строки>R0 список_действий</перевод_строки>
+    <действие>S19</действие>
+    <список_действий>17</список_действий>
+    <очередное_действие>18</очередное_действие>
+  </table>
+  <table>
+    <_x0020_States>15</_x0020_States>
+    <лексема>S16</лексема>
+    <перевод_строки>R0 список_лексем</перевод_строки>
+    <действие>R0 список_лексем</действие>
+    <список_лексем>20</список_лексем>
+    <последующая_лексема>15</последующая_лексема>
+  </table>
+  <table>
+    <_x0020_States>16</_x0020_States>
+    <лексема>R1 последующая_лексема {A4}</лексема>
+    <перевод_строки>R1 последующая_лексема {A4}</перевод_строки>
+    <действие>R1 последующая_лексема {A4}</действие>
+  </table>
+  <table>
+    <_x0020_States>17</_x0020_States>
+    <перевод_строки>R3 правая_часть</перевод_строки>
+  </table>
+  <table>
+    <_x0020_States>18</_x0020_States>
+    <перевод_строки>R0 список_действий</перевод_строки>
+    <действие>S19</действие>
+    <список_действий>21</список_действий>
+    <очередное_действие>18</очередное_действие>
+  </table>
+  <table>
+    <_x0020_States>19</_x0020_States>
+    <перевод_строки>R1 очередное_действие {A5}</перевод_строки>
+    <действие>R1 очередное_действие {A5}</действие>
+  </table>
+  <table>
+    <_x0020_States>20</_x0020_States>
+    <перевод_строки>R2 список_лексем</перевод_строки>
+    <действие>R2 список_лексем</действие>
+  </table>
+  <table>
+    <_x0020_States>21</_x0020_States>
+    <перевод_строки>R2 список_действий</перевод_строки>
+  </table>
+</NewDataSet>
