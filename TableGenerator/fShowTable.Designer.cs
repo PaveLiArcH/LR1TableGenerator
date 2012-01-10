@@ -36,15 +36,15 @@
 			// 
 			this.f_dgvMain.AllowUserToAddRows = false;
 			this.f_dgvMain.AllowUserToDeleteRows = false;
-			this.f_dgvMain.AllowUserToResizeColumns = false;
+			this.f_dgvMain.AllowUserToOrderColumns = true;
 			this.f_dgvMain.AllowUserToResizeRows = false;
-			this.f_dgvMain.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
 			this.f_dgvMain.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
 			this.f_dgvMain.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.f_dgvMain.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.f_dgvMain.Location = new System.Drawing.Point(0, 0);
 			this.f_dgvMain.Name = "f_dgvMain";
 			this.f_dgvMain.ReadOnly = true;
+			this.f_dgvMain.RowHeadersVisible = false;
 			this.f_dgvMain.Size = new System.Drawing.Size(821, 458);
 			this.f_dgvMain.TabIndex = 0;
 			// 

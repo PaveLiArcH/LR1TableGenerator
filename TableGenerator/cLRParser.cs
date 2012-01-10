@@ -58,7 +58,7 @@ namespace TableGenerator
 				if (!(_value is System.DBNull))
 				{
 					string _val = _value as String;
-					string[] _splitVal = _val.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+					string[] _splitVal = _val.Split(new char[] { cLRTableGenerator.cc_Separator }, StringSplitOptions.RemoveEmptyEntries);
 					if (_splitVal.Length > 0)
 					{
 						string _do = _splitVal[0];
@@ -220,19 +220,19 @@ namespace TableGenerator
 			{
 				switch (a_action[i])
 				{
-					case "{A1}":
+					case "A1":
 						cm_doA1();
 						break;
-					case "{A2}":
+					case "A2":
 						cm_doA2();
 						break;
-					case "{A3}":
+					case "A3":
 						cm_doA3();
 						break;
-					case "{A4}":
+					case "A4":
 						cm_doA4();
 						break;
-					case "{A5}":
+					case "A5":
 						cm_doA5();
 						break;
 					default:

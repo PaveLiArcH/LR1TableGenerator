@@ -245,7 +245,7 @@
 			this.Controls.Add(this.f_gbStep1);
 			this.MinimumSize = new System.Drawing.Size(414, 467);
 			this.Name = "fMain";
-			this.Text = "Генератор SLR-таблиц разбора";
+			this.Text = "Генератор LR1-таблиц разбора";
 			this.f_gbStep1.ResumeLayout(false);
 			this.f_gbStep1.PerformLayout();
 			this.f_gbStep2.ResumeLayout(false);

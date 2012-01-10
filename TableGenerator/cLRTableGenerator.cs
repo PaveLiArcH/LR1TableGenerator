@@ -14,6 +14,7 @@ namespace TableGenerator
 
 		List<cSet<cConfiguration>> cf_listItems = null;
 		Dictionary<cSet<cConfiguration>, Dictionary<cLexem, cSet<cConfiguration>>> cf_gotoResults = null;
+		public static char cc_Separator = '\0';
 
 		public cLexem cp_Root
 		{
@@ -85,7 +86,7 @@ namespace TableGenerator
 			else
 			{
 				_retVal = false;
-				throw new Exception("Не удалось сгенерировать SLR-таблицу ввиду неразрешимых конфликтов");
+				throw new Exception("Не удалось сгенерировать LR1-таблицу (возникли конфликты при генерации таблицы)");
 			}
 			return _retVal;
 		}
@@ -137,9 +138,9 @@ namespace TableGenerator
 					{
 						if (_configuration.cf_Production.cp_Root != cf_root)
 						{
-							cSet<cLexem> _follow = cf_follow[_configuration.cf_Production.cp_Root];
-							foreach (cLexem _lexem in _follow)
-							{
+							//cSet<cLexem> _follow = cf_follow[_configuration.cf_Production.cp_Root];
+							//foreach (cLexem _lexem in _follow)
+							//{
 								//string _str = "R" + _productsDictionary[_configuration.cf_Production].ToString();
 								//foreach (cLexem _action in _configuration.cf_Production.cp_ActionList)
 								//{
@@ -149,22 +150,29 @@ namespace TableGenerator
 								string _str;
 								if (_configuration.cf_Production.cp_EpsilonProduct)
 								{
-									_str = "R0 " + _configuration.cf_Production.cp_Root.ToString();
+									_str = "R0" + cc_Separator + _configuration.cf_Production.cp_Root.ToString();
 								}
 								else
 								{
-									_str = "R" + _configuration.cf_Production.cp_RightPart.Count.ToString() + " " + _configuration.cf_Production.cp_Root.ToString();
+									_str = "R" + _configuration.cf_Production.cp_RightPart.Count.ToString() + cc_Separator + _configuration.cf_Production.cp_Root.ToString();
 								}
 								foreach (cLexem _action in _configuration.cf_Production.cp_ActionList)
 								{
-									_str += " {" + _action.ToString() + "}";
+									_str += cc_Separator + _action.ToString();
 								}
-								cm_dataTableAdd(_retDataTable, _itemIndex, _lexem.cf_Name, _str);
-							}
+								cm_dataTableAdd(_retDataTable, _itemIndex, _configuration.cf_Terminal.cf_Name, _str);
+							//}
 						}
 						else
 						{
-							cm_dataTableAdd(_retDataTable, _itemIndex, cLexem.cc_StopLexem.cf_Name, "A");
+							if (_configuration.cf_Terminal == cLexem.cc_StopLexem)
+							{
+								cm_dataTableAdd(_retDataTable, _itemIndex, cLexem.cc_StopLexem.cf_Name, "A");
+							}
+							else
+							{
+								throw new Exception("Не удалось сгенерировать LR1 таблицу разбора");
+							}
 						}
 					}
 				}
@@ -323,7 +331,7 @@ namespace TableGenerator
 		{
 			List<cSet<cConfiguration>> _retList = new List<cSet<cConfiguration>>();
 
-			cConfiguration _rootConfiguration=cConfiguration.cm_GetConfiguration(a_root.cp_ListProducts[0], 0);
+			cConfiguration _rootConfiguration=cConfiguration.cm_GetConfiguration(a_root.cp_ListProducts[0], 0, cLexem.cc_StopLexem);
 			cSet<cConfiguration> _rootClosure = cConfiguration.cm_Closure(new cSet<cConfiguration>() { _rootConfiguration });
 
 			Dictionary<cSet<cConfiguration>, Dictionary<cLexem, cSet<cConfiguration>>> _gotoResults = new Dictionary<cSet<cConfiguration>, Dictionary<cLexem, cSet<cConfiguration>>>();

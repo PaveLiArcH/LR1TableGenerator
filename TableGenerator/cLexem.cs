@@ -240,6 +240,7 @@ namespace TableGenerator
 				_firstPerLexem.Add(_lexem, new cSet<cLexem>());
 			}
 			_firstPerLexem.Add(cLexem.cc_EpsilonLexem, new cSet<cLexem>());
+			_firstPerLexem.Add(cLexem.cc_StopLexem, new cSet<cLexem>());
 
 			bool _added = false;
 			do
